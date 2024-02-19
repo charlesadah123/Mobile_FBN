@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 58, 183, 110)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'FBN: Login'),
+      home: const MyHomePage(title: 'FBN: Get data'),
     );
   }
 }
