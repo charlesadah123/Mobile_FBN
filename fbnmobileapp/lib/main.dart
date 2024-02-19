@@ -10,9 +10,35 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  Home(),
+      home: Home(),
     );
   }
+}
+
+class MyPosition {
+  final double latitude;
+  final double longitude;
+  final DateTime timestamp;
+  final double accuracy;
+  final double altitudeAccuracy;
+  final double altitude;
+  final double headingAccuracy;
+  final double speed;
+  final double speedAccuracy;
+  final double heading;
+
+  MyPosition({
+    required this.latitude,
+    required this.longitude,
+    required this.timestamp,
+    required this.accuracy,
+    required this.altitudeAccuracy,
+    required this.altitude,
+    required this.headingAccuracy,
+    required this.speed,
+    required this.speedAccuracy,
+    required this.heading,
+  });
 }
 
 class Home extends StatefulWidget {
@@ -22,9 +48,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String currentAddress = 'My Address';
-  late Position currentposition;
+  late MyPosition currentposition;
 
-  Future<Position> _determinePosition() async {
+  Future<MyPosition> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -48,7 +74,8 @@ class _HomeState extends State<Home> {
     }
 
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
     try {
       List<Placemark> placemarks =
@@ -57,7 +84,18 @@ class _HomeState extends State<Home> {
       Placemark place = placemarks[0];
 
       setState(() {
-        currentposition = position;
+        currentposition = MyPosition(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          timestamp: DateTime.now(), // Removed the 'const' keyword
+          accuracy: position.accuracy,
+          altitudeAccuracy: position.altitudeAccuracy,
+          altitude: position.altitude,
+          headingAccuracy: position.headingAccuracy,
+          speed: position.speed,
+          speedAccuracy: position.speedAccuracy,
+          heading: position.heading,
+        );
         currentAddress =
             "${place.locality}, ${place.postalCode}, ${place.country}";
       });
@@ -66,18 +104,19 @@ class _HomeState extends State<Home> {
     }
 
     // Adding a default return statement
-      // ignore: prefer_const_constructors
-return Position(
-    latitude: 0.0,
-    longitude: 0.0,
-    timestamp: DateTime.now(),
-    accuracy: 0.0,
-    altitudeAccuracy: 0.0,
-    altitude: 0.0,
-    headingAccuracy: 0.0,
-    speed: 0.0,
-    speedAccuracy: 0.0, heading: 0.0,
-  );  }
+    return MyPosition(
+      latitude: 0.0,
+      longitude: 0.0,
+      timestamp: DateTime.now(),
+      accuracy: 0.0,
+      altitudeAccuracy: 0.0,
+      altitude: 0.0,
+      headingAccuracy: 0.0,
+      speed: 0.0,
+      speedAccuracy: 0.0,
+      heading: 0.0,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,22 +125,24 @@ return Position(
         title: Text('My Location'),
       ),
       body: Center(
-          child: Column(
-        children: [
-          Text(currentAddress),
-          currentposition != null
-              ? Text('Latitude = ' + currentposition.latitude.toString())
-              : Container(),
-          currentposition != null
-              ? Text('Longitude = ' + currentposition.longitude.toString())
-              : Container(),
-          TextButton(
+        child: Column(
+          children: [
+            Text(currentAddress),
+            currentposition != null
+                ? Text('Latitude = ' + currentposition.latitude.toString())
+                : Container(),
+            currentposition != null
+                ? Text('Longitude = ' + currentposition.longitude.toString())
+                : Container(),
+            TextButton(
               onPressed: () {
                 _determinePosition();
               },
-              child: Text('Locate me'))
-        ],
-      )),
+              child: Text('Locate me'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
